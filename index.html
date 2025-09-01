@@ -545,6 +545,7 @@ select{padding:8px;border-radius:8px;border:1px solid #e5e7eb}
   </div>
 </div>
 
+
 <h2 class="section-title">🎯 Consistency & Momentum</h2>
 <div class="leaderboard">
   <div class="participants-grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));">
@@ -816,7 +817,7 @@ select{padding:8px;border-radius:8px;border:1px solid #e5e7eb}
     <select id="metricSel">
       <option value="points">Daily Points</option>
       <option value="steps">Daily Steps</option>
-      <option value="both">Daily Steps + Points</option>
+      <option value="both">Daily Steps + Bonus Points</option>
     </select>
   </div>
   <canvas id="stackedDaily" height="160"></canvas>
@@ -867,7 +868,7 @@ function buildDataset(name, mode) {
   } else {
     const adjPoints = points.map((p,i)=> Math.max(0, p - steps[i]));
     datasets.push({label: 'Steps', data: steps, stack: 'stack1'});
-    datasets.push({label: 'Points (above Steps)', data: adjPoints, stack: 'stack1'});
+    datasets.push({label: 'Bonus Points', data: adjPoints, stack: 'stack1'});
   }
   return datasets;
 }
