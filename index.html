@@ -1,1343 +1,896 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Legs Misérables Challenge - Complete Results</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-            padding: 20px;
-        }
-        
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-        }
-        
-        .header {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        
-        .header h1 {
-            font-size: 3.5em;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #ff6b6b, #feca57);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: bold;
-        }
-        
-        .header h2 {
-            font-size: 1.4em;
-            color: #666;
-            margin-bottom: 20px;
-        }
-        
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 20px;
-            margin-bottom: 50px;
-        }
-        
-        .stat-card {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(102,126,234,0.3);
-        }
-        
-        .stat-card h3 {
-            font-size: 0.95em;
-            margin-bottom: 10px;
-            opacity: 0.9;
-        }
-        
-        .stat-card .number {
-            font-size: 2.2em;
-            font-weight: bold;
-            margin: 10px 0;
-        }
-        
-        .stat-card .subtitle {
-            font-size: 0.8em;
-            opacity: 0.8;
-        }
-        
-        .section {
-            margin-bottom: 50px;
-        }
-        
-        .section-title {
-            font-size: 2.5em;
-            text-align: center;
-            margin-bottom: 40px;
-            color: #333;
-            font-weight: bold;
-        }
-        
-        .podium-container {
-            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-            border-radius: 20px;
-            padding: 40px;
-            margin-bottom: 50px;
-        }
-        
-        .podium-grid {
-            display: grid;
-            grid-template-columns: 1fr 1.2fr 1fr;
-            gap: 20px;
-            align-items: end;
-        }
-        
-        .podium {
-            text-align: center;
-            padding: 30px 20px;
-            border-radius: 15px;
-            color: white;
-            position: relative;
-        }
-        
-        .podium.first {
-            background: linear-gradient(135deg, #FFD700, #FFA500);
-            min-height: 300px;
-            order: 2;
-        }
-        
-        .podium.second {
-            background: linear-gradient(135deg, #C0C0C0, #A0A0A0);
-            min-height: 250px;
-            order: 1;
-        }
-        
-        .podium.third {
-            background: linear-gradient(135deg, #CD7F32, #A0522D);
-            min-height: 250px;
-            order: 3;
-        }
-        
-        .podium .medal {
-            font-size: 4em;
-            margin-bottom: 15px;
-        }
-        
-        .podium .name {
-            font-weight: bold;
-            font-size: 1.4em;
-            margin-bottom: 8px;
-        }
-        
-        .podium .team {
-            opacity: 0.9;
-            font-size: 1em;
-            margin-bottom: 20px;
-        }
-        
-        .podium .steps {
-            font-weight: bold;
-            font-size: 1.3em;
-            margin-bottom: 8px;
-        }
-        
-        .podium .points {
-            font-size: 1.1em;
-            opacity: 0.9;
-        }
-        
-        .leaderboard {
-            background: #f8f9fa;
-            border-radius: 20px;
-            padding: 40px;
-            margin-bottom: 50px;
-        }
-        
-        .participants-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-        
-        .participant-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-            border-left: 5px solid #667eea;
-        }
-        
-        .participant-header {
-            display: flex;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        
-        .rank {
-            font-size: 1.8em;
-            font-weight: bold;
-            color: #667eea;
-            margin-right: 15px;
-            min-width: 35px;
-        }
-        
-        .participant-info h3 {
-            font-size: 1.3em;
-            color: #333;
-            margin-bottom: 5px;
-        }
-        
-        .participant-info .team {
-            color: #666;
-            font-size: 0.95em;
-        }
-        
-        .stats-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-        
-        .stat-box {
-            text-align: center;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        
-        .stat-box .value {
-            font-weight: bold;
-            color: #667eea;
-            font-size: 1.1em;
-        }
-        
-        .stat-box .label {
-            color: #666;
-            font-size: 0.85em;
-        }
-        
-        .achievements-section {
-            background: linear-gradient(135deg, #fff9c4, #ffeaa7);
-            border-radius: 20px;
-            padding: 40px;
-            margin: 50px 0;
-        }
-        
-        .achievements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 25px;
-            margin-top: 30px;
-        }
-        
-        .achievement-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border-left: 5px solid #ffc107;
-        }
-        
-        .achievement-title {
-            font-size: 1.4em;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .achievement-title .emoji {
-            margin-right: 12px;
-            font-size: 1.6em;
-        }
-        
-        .achievement-item {
-            margin-bottom: 15px;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
-        }
-        
-        .achievement-name {
-            font-weight: bold;
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-        
-        .achievement-detail {
-            color: #666;
-            font-size: 0.95em;
-        }
-        
-        .teams-section {
-            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
-            border-radius: 20px;
-            padding: 40px;
-            margin: 50px 0;
-        }
-        
-        .teams-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
-        }
-        
-        .team-card {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            position: relative;
-        }
-        
-        .team-rank {
-            position: absolute;
-            top: -10px;
-            right: 20px;
-            background: #667eea;
-            color: white;
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-weight: bold;
-            font-size: 0.9em;
-        }
-        
-        .team-name {
-            font-size: 1.4em;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 15px;
-        }
-        
-        .team-members {
-            color: #666;
-            margin-bottom: 20px;
-            line-height: 1.5;
-        }
-        
-        .team-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        
-        .fun-facts {
-            background: linear-gradient(135deg, #e8f5e8, #c8e6c9);
-            border-radius: 20px;
-            padding: 40px;
-            text-align: center;
-            margin: 50px 0;
-        }
-        
-        .landmarks-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-        
-        .landmark-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        .landmark-emoji {
-            font-size: 3em;
-            margin-bottom: 15px;
-        }
-        
-        .landmark-text {
-            font-size: 1.05em;
-            font-weight: 500;
-            color: #333;
-        }
-        
-        .chart-container {
-            background: white;
-            border-radius: 15px;
-            padding: 30px;
-            margin: 30px 0;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-        }
-        
-        .chart-title {
-            text-align: center;
-            font-size: 1.5em;
-            font-weight: bold;
-            margin-bottom: 25px;
-            color: #333;
-        }
-        
-        .congratulations {
-            background: linear-gradient(135deg, #ff6b6b, #feca57);
-            color: white;
-            border-radius: 20px;
-            padding: 50px;
-            text-align: center;
-            margin: 50px 0 0 0;
-        }
-        
-        .congratulations h2 {
-            font-size: 2.8em;
-            margin-bottom: 20px;
-        }
-        
-        .congratulations p {
-            font-size: 1.3em;
-            margin-bottom: 15px;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-            }
-            
-            .header h1 {
-                font-size: 2.5em;
-            }
-            
-            .podium-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legs Misérables Steps Challenge - Live Dashboard (Points Ranked)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box} body{font-family:Inter,system-ui,Segoe UI,Arial,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);padding:24px;color:#222}
+.container{max-width:1200px;margin:0 auto;background:#fff;border-radius:20px;padding:36px;box-shadow:0 20px 40px rgba(0,0,0,.12)}
+.header{text-align:center;margin-bottom:32px}
+.header h1{font-size:40px;margin:0;background:linear-gradient(45deg,#ff6b6b,#feca57);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
+.header h2{font-size:16px;color:#666;margin-top:6px}
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin:24px 0 36px}
+.stat-card{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:18px;border-radius:14px;text-align:center;box-shadow:0 10px 30px rgba(102,126,234,.3)}
+.stat-card h3{font-size:12px;margin:0 0 6px;opacity:.9;font-weight:600;letter-spacing:.3px}
+.stat-card .number{font-size:24px;font-weight:800;margin:2px 0}
+.stat-card .subtitle{font-size:12px;opacity:.85}
+.section-title{font-size:24px;text-align:center;margin:28px 0 18px;font-weight:800}
+.podium-grid{display:grid;grid-template-columns:1fr 1.2fr 1fr;gap:16px;align-items:end;margin:10px 0 28px}
+.podium{padding:20px;border-radius:14px;color:#fff;position:relative;text-align:center}
+.podium.first{background:linear-gradient(135deg,#FFD700,#FFA500);min-height:220px;order:2}
+.podium.second{background:linear-gradient(135deg,#C0C0C0,#A0A0A0);min-height:180px;order:1}
+.podium.third{background:linear-gradient(135deg,#CD7F32,#A0522D);min-height:180px;order:3}
+.podium .medal{font-size:44px;margin-bottom:8px}
+.podium .name{font-weight:800;font-size:18px;margin-bottom:3px}
+.podium .team{opacity:.9;font-size:14px;margin-bottom:8px}
+.podium .steps{font-weight:800;font-size:16px;margin-bottom:4px}
+.leaderboard{background:#f8f9fa;border-radius:16px;padding:24px}
+.participants-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px;margin-top:12px}
+.participant-card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 5px 15px rgba(0,0,0,.06);border-left:5px solid #667eea}
+.participant-header{display:flex;align-items:center;margin-bottom:8px}
+.rank{font-size:20px;font-weight:800;color:#667eea;margin-right:12px;min-width:30px}
+.participant-info h3{font-size:16px;margin:0 0 2px}
+.participant-info .team{color:#666;font-size:12px}
+.stats-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px}
+.stat-box{text-align:center;padding:10px;background:#f3f4f6;border-radius:8px}
+.stat-box .value{font-weight:800;color:#667eea}
+.badge{display:inline-block;background:#22c55e;color:#fff;padding:2px 8px;border-radius:999px;font-size:10px;margin-left:8px;vertical-align:middle;font-weight:800;letter-spacing:.3px}
+.team-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.team-card{position:relative;background:#fff;border-radius:12px;padding:16px;box-shadow:0 5px 15px rgba(0,0,0,.06)}
+.team-rank{position:absolute;top:-10px;right:16px;background:#667eea;color:#fff;padding:6px 10px;border-radius:18px;font-size:12px;font-weight:800}
+.chart-container{background:#fff;border-radius:12px;padding:16px;box-shadow:0 5px 15px rgba(0,0,0,.06);margin:18px 0}
+.chart-title{text-align:center;font-weight:800;margin-bottom:8px}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:12px}
+select{padding:8px;border-radius:8px;border:1px solid #e5e7eb}
+@media(max-width:768px){.podium-grid{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🏃‍♂️ Legs Misérables Challenge 🏃‍♀️</h1>
-            <h2>Complete Results & Analysis | August 9-31, 2025</h2>
+<div class="container">
+<div class="header">
+  <h1>🏃‍♂️ Legs Misérables Steps Challenge 🏃‍♀️</h1>
+  <h2>Complete Results & Analysis | August 09–31, 2025</h2>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><h3>🏆 Total Steps</h3><div class="number">10,127,066</div><div class="subtitle">All Participants</div></div>
+  <div class="stat-card"><h3>⭐ Total Points</h3><div class="number">11,592,066</div><div class="subtitle">Challenge Points</div></div>
+  <div class="stat-card"><h3>👥 Participants</h3><div class="number">36</div><div class="subtitle">Unique People</div></div>
+  <div class="stat-card"><h3>👟 Teams</h3><div class="number">19</div><div class="subtitle">Competing Teams</div></div>
+  <div class="stat-card"><h3>📆 Challenge Days</h3><div class="number">23</div><div class="subtitle">Dates Tracked</div></div>
+</div>
+
+<h2 class="section-title">🏆 Champions Podium (By Points)</h2>
+<div class="podium-grid">
+  <div class="podium second"><div class="medal">🥈</div><div class="name">Marie Olano</div><div class="team">Hopia Catch Up</div><div class="steps">855,360 points</div></div>
+  <div class="podium first"><div class="medal">🥇</div><div class="name">Zack Rutherford</div><div class="team">Stepocalypse</div><div class="steps">878,392 points</div></div>
+  <div class="podium third"><div class="medal">🥉</div><div class="name">Jett Rutherford</div><div class="team">Stepocalypse</div><div class="steps">846,530 points</div></div>
+</div>
+
+<div class="leaderboard">
+  <h2 class="section-title">📊 Top 28 Leaderboard (By Points)</h2>
+  <div class="participants-grid">
+    
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">1.</div>
+        <div class="participant-info">
+          <h3>Zack Rutherford <span class="badge">FINISHER</span></h3>
+          <div class="team">Stepocalypse</div>
         </div>
-        
-        <!-- Overview Stats -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <h3>🏆 Total Steps</h3>
-                <div class="number">8.75M</div>
-                <div class="subtitle">Top 26 Combined</div>
-            </div>
-            <div class="stat-card">
-                <h3>⭐ Total Points</h3>
-                <div class="number">10.2M</div>
-                <div class="subtitle">Challenge Points</div>
-            </div>
-            <div class="stat-card">
-                <h3>🌍 Distance</h3>
-                <div class="number">4,143</div>
-                <div class="subtitle">Miles Walked</div>
-            </div>
-            <div class="stat-card">
-                <h3>🔥 Calories</h3>
-                <div class="number">350K</div>
-                <div class="subtitle">Estimated Burned</div>
-            </div>
-            <div class="stat-card">
-                <h3>🏃‍♀️ Marathons</h3>
-                <div class="number">158</div>
-                <div class="subtitle">Equivalent</div>
-            </div>
-            <div class="stat-card">
-                <h3>⚡ 14K+ Days</h3>
-                <div class="number">412</div>
-                <div class="subtitle">High Step Days</div>
-            </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">878,392</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">33,886</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">22</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">2.</div>
+        <div class="participant-info">
+          <h3>Marie Olano <span class="badge">FINISHER</span></h3>
+          <div class="team">Hopia Catch Up</div>
         </div>
-        
-        <!-- Champions Podium -->
-        <div class="section">
-            <h2 class="section-title">🏆 Champions Podium</h2>
-            <div class="podium-container">
-                <div class="podium-grid">
-                    <div class="podium second">
-                        <div class="medal">🥈</div>
-                        <div class="name">Marie Olano</div>
-                        <div class="team">Hopia Catch Up</div>
-                        <div class="steps">653,553 steps</div>
-                        <div class="points">751,053 points</div>
-                    </div>
-                    <div class="podium first">
-                        <div class="medal">🥇</div>
-                        <div class="name">Zack Rutherford</div>
-                        <div class="team">Stepocalypse</div>
-                        <div class="steps">711,108 steps</div>
-                        <div class="points">805,608 points</div>
-                    </div>
-                    <div class="podium third">
-                        <div class="medal">🥉</div>
-                        <div class="name">Jett Rutherford</div>
-                        <div class="team">Stepocalypse</div>
-                        <div class="steps">643,107 steps</div>
-                        <div class="points">730,607 points</div>
-                    </div>
-                </div>
-            </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">855,360</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">32,754</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">23</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">3.</div>
+        <div class="participant-info">
+          <h3>Jett Rutherford <span class="badge">FINISHER</span></h3>
+          <div class="team">Stepocalypse</div>
         </div>
-        
-        <!-- Top 26 Leaderboard -->
-        <div class="section">
-            <div class="leaderboard">
-                <h2 class="section-title">📊 Complete Top 26 Leaderboard</h2>
-                <div class="participants-grid">
-                    <!-- Participants 4-10 -->
-                    <div class="participant-card">
-                        <div class="participant-header">
-                            <div class="rank">4.</div>
-                            <div class="participant-info">
-                                <h3>Lorenzo Carpio</h3>
-                                <div class="team">The Fat And The Curious</div>
-                            </div>
-                        </div>
-                        <div class="stats-row">
-                            <div class="stat-box">
-                                <div class="value">563,800</div>
-                                <div class="label">Total Steps</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">24,513</div>
-                                <div class="label">Daily Avg</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">100%</div>
-                                <div class="label">Consistency</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">23</div>
-                                <div class="label">14K+ Days</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="participant-card">
-                        <div class="participant-header">
-                            <div class="rank">5.</div>
-                            <div class="participant-info">
-                                <h3>Maury Guadalupe</h3>
-                                <div class="team">Heart And Sole</div>
-                            </div>
-                        </div>
-                        <div class="stats-row">
-                            <div class="stat-box">
-                                <div class="value">450,275</div>
-                                <div class="label">Total Steps</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">19,577</div>
-                                <div class="label">Daily Avg</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">96%</div>
-                                <div class="label">Consistency</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">21</div>
-                                <div class="label">14K+ Days</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="participant-card">
-                        <div class="participant-header">
-                            <div class="rank">6.</div>
-                            <div class="participant-info">
-                                <h3>Jacqui Guadalupe</h3>
-                                <div class="team">Heart And Sole</div>
-                            </div>
-                        </div>
-                        <div class="stats-row">
-                            <div class="stat-box">
-                                <div class="value">429,171</div>
-                                <div class="label">Total Steps</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">18,660</div>
-                                <div class="label">Daily Avg</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">96%</div>
-                                <div class="label">Consistency</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">20</div>
-                                <div class="label">14K+ Days</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="participant-card">
-                        <div class="participant-header">
-                            <div class="rank">7.</div>
-                            <div class="participant-info">
-                                <h3>Stephen Olano</h3>
-                                <div class="team">Hopia Catch Up</div>
-                            </div>
-                        </div>
-                        <div class="stats-row">
-                            <div class="stat-box">
-                                <div class="value">403,613</div>
-                                <div class="label">Total Steps</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">17,548</div>
-                                <div class="label">Daily Avg</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">96%</div>
-                                <div class="label">Consistency</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">19</div>
-                                <div class="label">14K+ Days</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="participant-card">
-                        <div class="participant-header">
-                            <div class="rank">8.</div>
-                            <div class="participant-info">
-                                <h3>Arthur Olano</h3>
-                                <div class="team">Sole Mates</div>
-                            </div>
-                        </div>
-                        <div class="stats-row">
-                            <div class="stat-box">
-                                <div class="value">384,327</div>
-                                <div class="label">Total Steps</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">16,710</div>
-                                <div class="label">Daily Avg</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">96%</div>
-                                <div class="label">Consistency</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">18</div>
-                                <div class="label">14K+ Days</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="participant-card">
-                        <div class="participant-header">
-                            <div class="rank">9.</div>
-                            <div class="participant-info">
-                                <h3>Arthur Kaufman</h3>
-                                <div class="team">Big Beautiful Strides</div>
-                            </div>
-                        </div>
-                        <div class="stats-row">
-                            <div class="stat-box">
-                                <div class="value">368,851</div>
-                                <div class="label">Total Steps</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">16,037</div>
-                                <div class="label">Daily Avg</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">96%</div>
-                                <div class="label">Consistency</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">17</div>
-                                <div class="label">14K+ Days</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="participant-card">
-                        <div class="participant-header">
-                            <div class="rank">10.</div>
-                            <div class="participant-info">
-                                <h3>Oli Ramos</h3>
-                                <div class="team">Lakad Pusa</div>
-                            </div>
-                        </div>
-                        <div class="stats-row">
-                            <div class="stat-box">
-                                <div class="value">363,891</div>
-                                <div class="label">Total Steps</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">15,821</div>
-                                <div class="label">Daily Avg</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">96%</div>
-                                <div class="label">Consistency</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">16</div>
-                                <div class="label">14K+ Days</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Participants 11-20 -->
-                    <div class="participant-card">
-                        <div class="participant-header">
-                            <div class="rank">11.</div>
-                            <div class="participant-info">
-                                <h3>armi olaño</h3>
-                                <div class="team">Sole Mates</div>
-                            </div>
-                        </div>
-                        <div class="stats-row">
-                            <div class="stat-box">
-                                <div class="value">357,296</div>
-                                <div class="label">Total Steps</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">15,535</div>
-                                <div class="label">Daily Avg</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">100%</div>
-                                <div class="label">Consistency</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">15</div>
-                                <div class="label">14K+ Days</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="participant-card">
-                        <div class="participant-header">
-                            <div class="rank">12.</div>
-                            <div class="participant-info">
-                                <h3>Rjay Conrad</h3>
-                                <div class="team">Walksilog</div>
-                            </div>
-                        </div>
-                        <div class="stats-row">
-                            <div class="stat-box">
-                                <div class="value">355,453</div>
-                                <div class="label">Total Steps</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">15,454</div>
-                                <div class="label">Daily Avg</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">96%</div>
-                                <div class="label">Consistency</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">15</div>
-                                <div class="label">14K+ Days</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="participant-card">
-                        <div class="participant-header">
-                            <div class="rank">13.</div>
-                            <div class="participant-info">
-                                <h3>er plata</h3>
-                                <div class="team">Silver</div>
-                            </div>
-                        </div>
-                        <div class="stats-row">
-                            <div class="stat-box">
-                                <div class="value">343,255</div>
-                                <div class="label">Total Steps</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">14,924</div>
-                                <div class="label">Daily Avg</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">96%</div>
-                                <div class="label">Consistency</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">14</div>
-                                <div class="label">14K+ Days</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="participant-card">
-                        <div class="participant-header">
-                            <div class="rank">14.</div>
-                            <div class="participant-info">
-                                <h3>Nat gP</h3>
-                                <div class="team">Silver</div>
-                            </div>
-                        </div>
-                        <div class="stats-row">
-                            <div class="stat-box">
-                                <div class="value">338,975</div>
-                                <div class="label">Total Steps</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">14,738</div>
-                                <div class="label">Daily Avg</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">96%</div>
-                                <div class="label">Consistency</div>
-                            </div>
-                            <div class="stat-box">
-                                <div class="value">14</div>
-                                <div class="label">14K+ Days</div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Participants 15-26 -->
-                    <div class="participant-card">
-                        <div class="participant-header">
-                            <div class="rank">15-26</div>
-                            <div class="participant-info">
-                                <h3>Remaining Top Performers</h3>
-                                <div class="team">All Amazing!</div>
-                            </div>
-                        </div>
-                        <div style="font-size: 0.9em; line-height: 1.8; color: #666;">
-                            15. cecile gomez (Big Beautiful Strides) - 284,299 steps<br>
-                            16. Jessie Bartolome (No Teams) - 267,506 steps<br>
-                            17. Gaye Claveria (Walksilog) - 247,232 steps<br>
-                            18. Mayang Carps (Pata Team) - 219,857 steps<br>
-                            19. daday p (Thigh Hard) - 210,998 steps<br>
-                            20. Paolo Bas (The Walking Dead) - 189,914 steps<br>
-                            21. Owen Jude (The Fat And The Curious) - 182,560 steps<br>
-                            22. Khaleel McKinley (Black And Yellow) - 179,611 steps<br>
-                            23. Marc Solis (Til Steps Do Us Part) - 172,561 steps<br>
-                            24. jay p (Thigh Hard) - 162,207 steps<br>
-                            25. Ceejay Sahagun (Waddling Penguins) - 138,486 steps<br>
-                            26. Therese Bas (The Walking Dead) - 128,473 steps
-                        </div>
-                    </div>
-                </div>
-            </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">846,530</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">32,849</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">22</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">4.</div>
+        <div class="participant-info">
+          <h3>Lorenzo Carpio <span class="badge">FINISHER</span></h3>
+          <div class="team">The Fat And The Curious</div>
         </div>
-        
-        <!-- Individual Achievements -->
-        <div class="achievements-section">
-            <h2 class="section-title">🎉 Individual Achievement Awards</h2>
-            <div class="achievements-grid">
-                <div class="achievement-card">
-                    <div class="achievement-title">
-                        <span class="emoji">🏆</span>
-                        All Daily Goal Hitters
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Lorenzo Carpio</div>
-                        <div class="achievement-detail">23/23 days hit 14K+ steps - Perfect record!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Zack Rutherford</div>
-                        <div class="achievement-detail">22/23 days hit 14K+ steps - Nearly perfect!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Marie Olano</div>
-                        <div class="achievement-detail">22/23 days hit 14K+ steps - Incredible consistency!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Jett Rutherford</div>
-                        <div class="achievement-detail">22/23 days hit 14K+ steps - Outstanding dedication!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Maury Guadalupe</div>
-                        <div class="achievement-detail">21/23 days hit 14K+ steps - Excellent performance!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Jacqui Guadalupe</div>
-                        <div class="achievement-detail">20/23 days hit 14K+ steps - Strong goal achievement!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Stephen Olano</div>
-                        <div class="achievement-detail">19/23 days hit 14K+ steps - Great consistency!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Arthur Olano</div>
-                        <div class="achievement-detail">18/23 days hit 14K+ steps - Solid goal hitter!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Arthur Kaufman</div>
-                        <div class="achievement-detail">17/23 days hit 14K+ steps - Strong goal achiever!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Oli Ramos</div>
-                        <div class="achievement-detail">16/23 days hit 14K+ steps - Impressive consistency!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">armi olaño</div>
-                        <div class="achievement-detail">15/23 days hit 14K+ steps - Great goal hitting!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Rjay Conrad</div>
-                        <div class="achievement-detail">15/23 days hit 14K+ steps - Excellent dedication!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">er plata</div>
-                        <div class="achievement-detail">14/23 days hit 14K+ steps - Strong goal achiever!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Nat gP</div>
-                        <div class="achievement-detail">14/23 days hit 14K+ steps - Consistent performer!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">cecile gomez</div>
-                        <div class="achievement-detail">12/23 days hit 14K+ steps - Solid goal hitting!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Jessie Bartolome</div>
-                        <div class="achievement-detail">11/23 days hit 14K+ steps - Great effort!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Gaye Claveria</div>
-                        <div class="achievement-detail">10/23 days hit 14K+ steps - Reached the milestone!</div>
-                    </div>
-                </div>
-                
-                <div class="achievement-card">
-                    <div class="achievement-title">
-                        <span class="emoji">👑</span>
-                        All Daily Winners
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Zack Rutherford</div>
-                        <div class="achievement-detail">7 daily wins - Most days with highest steps!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Marie Olano</div>
-                        <div class="achievement-detail">5 daily wins - Consistent daily step champion</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Lorenzo Carpio</div>
-                        <div class="achievement-detail">4 daily wins - Reliable daily step leader</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Jett Rutherford</div>
-                        <div class="achievement-detail">3 daily wins - Strong daily performances</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Maury Guadalupe</div>
-                        <div class="achievement-detail">2 daily wins - Clutch step performances</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Arthur Kaufman</div>
-                        <div class="achievement-detail">1 daily win - Earned that victory day!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Stephen Olano</div>
-                        <div class="achievement-detail">1 daily win - Stepped up for the win!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Jacqui Guadalupe</div>
-                        <div class="achievement-detail">1 daily win - Made that day count!</div>
-                    </div>
-                </div>
-                
-                <div class="achievement-card">
-                    <div class="achievement-title">
-                        <span class="emoji">🎯</span>
-                        Most Consistent to Hit 14K Daily Goal
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Lorenzo Carpio</div>
-                        <div class="achievement-detail">23/23 days over 14K steps (100% success rate!)</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Elite 14K Club</div>
-                        <div class="achievement-detail">Zack (22/23), Marie (22/23), Jett (22/23), Maury (21/23), Jacqui (20/23), Stephen (19/23)</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Strong 14K Performers</div>
-                        <div class="achievement-detail">Maury (21/23), Jacqui (20/23) - Excellent consistency!</div>
-                    </div>
-                </div>
-                
-                <div class="achievement-card">
-                    <div class="achievement-title">
-                        <span class="emoji">🔥</span>
-                        Biggest Single Day Performance
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Zack Rutherford</div>
-                        <div class="achievement-detail">60,570 steps in one day! 🤯 Absolutely incredible!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Maury Guadalupe</div>
-                        <div class="achievement-detail">58,036 steps - What a powerhouse performance!</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Marie Olano</div>
-                        <div class="achievement-detail">56,352 steps - Crushing those goals!</div>
-                    </div>
-                </div>
-                
-                <div class="achievement-card">
-                    <div class="achievement-title">
-                        <span class="emoji">📈</span>
-                        Most Improved Over Time
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Comeback Champions</div>
-                        <div class="achievement-detail">Owen Jude, Paolo Bas, Marc Solis, jay p, Ceejay Sahagun</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Strong Finishers</div>
-                        <div class="achievement-detail">Lorenzo Carpio, Maury Guadalupe, Arthur Kaufman, Oli Ramos, Rjay Conrad</div>
-                    </div>
-                </div>
-                
-                <div class="achievement-card">
-                    <div class="achievement-title">
-                        <span class="emoji">🏖️</span>
-                        Weekend Warrior vs Weekday Champion
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Weekend Warriors</div>
-                        <div class="achievement-detail">Zack Rutherford, Jett Rutherford, Lorenzo Carpio, Maury Guadalupe, Arthur Kaufman</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Weekday Champions</div>
-                        <div class="achievement-detail">Marie Olano, Stephen Olano, Jacqui Guadalupe, Oli Ramos, armi olaño</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">All-Week Legends</div>
-                        <div class="achievement-detail">Rjay Conrad, er plata, Nat gP, Arthur Olano, cecile gomez</div>
-                    </div>
-                </div>
-                
-                <div class="achievement-card">
-                    <div class="achievement-title">
-                        <span class="emoji">🔥</span>
-                        Personal Streaks and Milestones
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Milestone Breakers (600K+ Club)</div>
-                        <div class="achievement-detail">Zack Rutherford, Marie Olano, Jett Rutherford</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Daily Goal Streak Masters</div>
-                        <div class="achievement-detail">Lorenzo Carpio (23 consecutive), Zack Rutherford (20+ consecutive), Marie Olano (19+ consecutive)</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Half Million Heroes (500K+ Club)</div>
-                        <div class="achievement-detail">Lorenzo Carpio, Maury Guadalupe, Jacqui Guadalupe, Stephen Olano</div>
-                    </div>
-                    <div class="achievement-item">
-                        <div class="achievement-name">Quarter Million Masters (250K+ Club)</div>
-                        <div class="achievement-detail">Arthur Olano, Arthur Kaufman, Oli Ramos, armi olaño, Rjay Conrad</div>
-                    </div>
-                </div>
-            </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">649,832</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">24,688</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">18</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">5.</div>
+        <div class="participant-info">
+          <h3>Maury Guadalupe <span class="badge">FINISHER</span></h3>
+          <div class="team">Heart And Sole</div>
         </div>
-        
-        <!-- Team Battle Results -->
-        <div class="teams-section">
-            <h2 class="section-title">🏅 Team Battle Championship</h2>
-            <div class="teams-grid">
-                <div class="team-card">
-                    <div class="team-rank">🥇 1st</div>
-                    <div class="team-name">Stepocalypse</div>
-                    <div class="team-members">Zack Rutherford, Jett Rutherford</div>
-                    <div class="team-stats">
-                        <div class="stat-box">
-                            <div class="value">1.35M</div>
-                            <div class="label">Total Steps</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">1.54M</div>
-                            <div class="label">Total Points</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">677K</div>
-                            <div class="label">Avg/Member</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">642 mi</div>
-                            <div class="label">Distance</div>
-                        </div>
-                    </div>
-                    <div style="margin-top: 15px; padding: 15px; background: #fff3cd; border-radius: 8px; font-size: 0.9em;">
-                        <strong>🏆 Most Balanced Performance:</strong> Both members in top 3! Ultimate team synergy.
-                    </div>
-                </div>
-                
-                <div class="team-card">
-                    <div class="team-rank">🥈 2nd</div>
-                    <div class="team-name">Hopia Catch Up</div>
-                    <div class="team-members">Marie Olano, Stephen Olano</div>
-                    <div class="team-stats">
-                        <div class="stat-box">
-                            <div class="value">1.06M</div>
-                            <div class="label">Total Steps</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">1.24M</div>
-                            <div class="label">Total Points</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">529K</div>
-                            <div class="label">Avg/Member</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">501 mi</div>
-                            <div class="label">Distance</div>
-                        </div>
-                    </div>
-                    <div style="margin-top: 15px; padding: 15px; background: #d1ecf1; border-radius: 8px; font-size: 0.9em;">
-                        <strong>👨‍👩‍👧‍👦 Family Power Duo:</strong> Amazing teamwork and mutual motivation!
-                    </div>
-                </div>
-                
-                <div class="team-card">
-                    <div class="team-rank">🥉 3rd</div>
-                    <div class="team-name">Heart And Sole</div>
-                    <div class="team-members">Maury Guadalupe, Jacqui Guadalupe</div>
-                    <div class="team-stats">
-                        <div class="stat-box">
-                            <div class="value">879K</div>
-                            <div class="label">Total Steps</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">985K</div>
-                            <div class="label">Total Points</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">440K</div>
-                            <div class="label">Avg/Member</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">417 mi</div>
-                            <div class="label">Distance</div>
-                        </div>
-                    </div>
-                    <div style="margin-top: 15px; padding: 15px; background: #f8d7da; border-radius: 8px; font-size: 0.9em;">
-                        <strong>🎯 Consistency Champions:</strong> Steady excellence throughout!
-                    </div>
-                </div>
-                
-                <div class="team-card">
-                    <div class="team-rank">4th</div>
-                    <div class="team-name">The Fat And The Curious</div>
-                    <div class="team-members">Lorenzo Carpio, Owen Jude</div>
-                    <div class="team-stats">
-                        <div class="stat-box">
-                            <div class="value">746K</div>
-                            <div class="label">Total Steps</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">825K</div>
-                            <div class="label">Total Points</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">373K</div>
-                            <div class="label">Avg/Member</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">354 mi</div>
-                            <div class="label">Distance</div>
-                        </div>
-                    </div>
-                    <div style="margin-top: 15px; padding: 15px; background: #d4edda; border-radius: 8px; font-size: 0.9em;">
-                        <strong>⭐ Perfect Attendance Star:</strong> Lorenzo achieved 100% consistency!
-                    </div>
-                </div>
-                
-                <div class="team-card">
-                    <div class="team-rank">5th</div>
-                    <div class="team-name">Sole Mates</div>
-                    <div class="team-members">Arthur Olano, armi olaño</div>
-                    <div class="team-stats">
-                        <div class="stat-box">
-                            <div class="value">742K</div>
-                            <div class="label">Total Steps</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">912K</div>
-                            <div class="label">Total Points</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">371K</div>
-                            <div class="label">Avg/Member</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">352 mi</div>
-                            <div class="label">Distance</div>
-                        </div>
-                    </div>
-                    <div style="margin-top: 15px; padding: 15px; background: #fff3cd; border-radius: 8px; font-size: 0.9em;">
-                        <strong>💪 Determination Heroes:</strong> Never-give-up attitude and team spirit!
-                    </div>
-                </div>
-                
-                <div class="team-card">
-                    <div class="team-rank">6th</div>
-                    <div class="team-name">Silver</div>
-                    <div class="team-members">er plata, Nat gP</div>
-                    <div class="team-stats">
-                        <div class="stat-box">
-                            <div class="value">682K</div>
-                            <div class="label">Total Steps</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">758K</div>
-                            <div class="label">Total Points</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">341K</div>
-                            <div class="label">Avg/Member</div>
-                        </div>
-                        <div class="stat-box">
-                            <div class="value">324 mi</div>
-                            <div class="label">Distance</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">571,085</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">21,155</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">20</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">6.</div>
+        <div class="participant-info">
+          <h3>Jacqui Guadalupe <span class="badge">FINISHER</span></h3>
+          <div class="team">Heart And Sole</div>
         </div>
-        
-        <!-- Fun Milestone Comparisons -->
-        <div class="fun-facts">
-            <h2 class="section-title">🌍 Amazing Distance & Milestone Comparisons</h2>
-            <div class="landmarks-grid">
-                <div class="landmark-card">
-                    <div class="landmark-emoji">🗽</div>
-                    <div class="landmark-text">
-                        <strong>Statue of Liberty</strong><br>
-                        Climbed it 24,720 times!<br>
-                        <small>(354 steps to crown)</small>
-                    </div>
-                </div>
-                
-                <div class="landmark-card">
-                    <div class="landmark-emoji">🏢</div>
-                    <div class="landmark-text">
-                        <strong>Empire State Building</strong><br>
-                        Climbed 6,397 times!<br>
-                        <small>(1,368 steps to 86th floor)</small>
-                    </div>
-                </div>
-                
-                <div class="landmark-card">
-                    <div class="landmark-emoji">🌉</div>
-                    <div class="landmark-text">
-                        <strong>Golden Gate Bridge</strong><br>
-                        Walked across 1,220 times!<br>
-                        <small>(1.7 miles each crossing)</small>
-                    </div>
-                </div>
-                
-                <div class="landmark-card">
-                    <div class="landmark-emoji">🏛️</div>
-                    <div class="landmark-text">
-                        <strong>Great Wall of China</strong><br>
-                        0.31% of entire wall!<br>
-                        <small>(13,170 miles total length)</small>
-                    </div>
-                </div>
-                
-                <div class="landmark-card">
-                    <div class="landmark-emoji">🌎</div>
-                    <div class="landmark-text">
-                        <strong>Around the Equator</strong><br>
-                        16.6% of the way around!<br>
-                        <small>(24,901 miles around Earth)</small>
-                    </div>
-                </div>
-                
-                <div class="landmark-card">
-                    <div class="landmark-emoji">🚀</div>
-                    <div class="landmark-text">
-                        <strong>To the Moon</strong><br>
-                        1.74% of the journey!<br>
-                        <small>(238,855 miles away)</small>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="margin-top: 40px;">
-                <h3 style="font-size: 1.8em; margin-bottom: 25px; color: #333;">🍔 Calorie Burn Equivalents</h3>
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-                    <div class="landmark-card">
-                        <div style="font-size: 2.5em; margin-bottom: 15px;">🍕</div>
-                        <div><strong>1,167 slices</strong><br>of pizza burned off!</div>
-                    </div>
-                    <div class="landmark-card">
-                        <div style="font-size: 2.5em; margin-bottom: 15px;">🍔</div>
-                        <div><strong>636 Big Macs</strong><br>worth of calories!</div>
-                    </div>
-                    <div class="landmark-card">
-                        <div style="font-size: 2.5em; margin-bottom: 15px;">🍰</div>
-                        <div><strong>1,167 pieces</strong><br>of cake equivalent!</div>
-                    </div>
-                    <div class="landmark-card">
-                        <div style="font-size: 2.5em; margin-bottom: 15px;">🥤</div>
-                        <div><strong>1,021 cans</strong><br>of soda burned!</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="margin-top: 40px;">
-                <h3 style="font-size: 1.8em; margin-bottom: 25px; color: #333;">✈️ "Walking to Destinations" Adventures</h3>
-                <div style="font-size: 1.15em; line-height: 2; max-width: 700px; margin: 0 auto;">
-                    🥇 <strong>Zack Rutherford (338 miles):</strong> Could walk from New York to Cleveland!<br>
-                    🥈 <strong>Marie Olano (310 miles):</strong> Could walk from San Francisco to Los Angeles!<br>
-                    🥉 <strong>Jett Rutherford (305 miles):</strong> Could walk from Atlanta to Jacksonville and back!<br>
-                    🌟 <strong>Lorenzo Carpio (268 miles):</strong> Could walk from New York to Boston!<br>
-                    💪 <strong>Maury Guadalupe (214 miles):</strong> Could walk from Manila to Baguio!
-                </div>
-            </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">559,689</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">20,486</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">19</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">7.</div>
+        <div class="participant-info">
+          <h3>Stephen Olano <span class="badge">FINISHER</span></h3>
+          <div class="team">Hopia Catch Up</div>
         </div>
-        
-        <!-- Final Congratulations -->
-        <div class="congratulations">
-            <h2>🎊 CONGRATULATIONS TO ALL PARTICIPANTS! 🎊</h2>
-            <p>🏃‍♂️ 23 days of incredible dedication and determination! 🏃‍♀️</p>
-            <p>💪 You've proven that together, we can achieve amazing things! 💪</p>
-            <p>🌟 Each step was a step towards better health and team spirit! 🌟</p>
-            <div style="margin-top: 30px; padding: 25px; background: rgba(255,255,255,0.2); border-radius: 15px;">
-                <p style="font-size: 1.2em; font-style: italic; margin-bottom: 15px;">
-                    "The journey of a thousand miles begins with a single step."
-                </p>
-                <p style="font-size: 1.4em; font-weight: bold;">
-                    You took 8.75 MILLION steps! 👏
-                </p>
-            </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">530,674</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">18,920</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">21</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">8.</div>
+        <div class="participant-info">
+          <h3>Rjay Conrad <span class="badge">FINISHER</span></h3>
+          <div class="team">Walksilog</div>
         </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">502,552</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">17,893</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">20</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">9.</div>
+        <div class="participant-info">
+          <h3>Arthur Olano <span class="badge">FINISHER</span></h3>
+          <div class="team">Sole Mates</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">479,257</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">17,337</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">17</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">10.</div>
+        <div class="participant-info">
+          <h3>Armi Olaño <span class="badge">FINISHER</span></h3>
+          <div class="team">Sole Mates</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">472,780</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">16,251</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">22</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">11.</div>
+        <div class="participant-info">
+          <h3>Nat Gp <span class="badge">FINISHER</span></h3>
+          <div class="team">Silver</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">441,145</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">15,549</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">19</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">12.</div>
+        <div class="participant-info">
+          <h3>Arthur Kaufman <span class="badge">FINISHER</span></h3>
+          <div class="team">Big Beautiful Strides</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">437,832</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">16,905</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">14</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">13.</div>
+        <div class="participant-info">
+          <h3>Er Plata <span class="badge">FINISHER</span></h3>
+          <div class="team">Silver</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">437,317</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">15,644</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">18</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">14.</div>
+        <div class="participant-info">
+          <h3>Oli Ramos <span class="badge">FINISHER</span></h3>
+          <div class="team">Lakad Pusa</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">415,903</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">15,952</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">14</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">15.</div>
+        <div class="participant-info">
+          <h3>Daday P </h3>
+          <div class="team">Thigh Hard</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">331,096</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">11,482</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">13</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">16.</div>
+        <div class="participant-info">
+          <h3>Cecile Gomez </h3>
+          <div class="team">Big Beautiful Strides</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">329,264</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">13,250</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">7</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">17.</div>
+        <div class="participant-info">
+          <h3>Gaye Claveria </h3>
+          <div class="team">Walksilog</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">320,357</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">11,798</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">8</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">18.</div>
+        <div class="participant-info">
+          <h3>Jessie Bartolome </h3>
+          <div class="team">No Teams</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">317,067</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">12,263</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">10</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">19.</div>
+        <div class="participant-info">
+          <h3>Owen Jude </h3>
+          <div class="team">The Fat And The Curious</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">243,059</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">8,850</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">7</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">20.</div>
+        <div class="participant-info">
+          <h3>Mayang Carps </h3>
+          <div class="team">Pata Team</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">235,996</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">9,934</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">2</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">21.</div>
+        <div class="participant-info">
+          <h3>Paolo Bas </h3>
+          <div class="team">The Walking Dead</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">216,220</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">8,987</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">2</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">22.</div>
+        <div class="participant-info">
+          <h3>Khaleel Mckinley </h3>
+          <div class="team">Black And Yellow</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">198,960</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">8,520</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">0</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">23.</div>
+        <div class="participant-info">
+          <h3>Jay P </h3>
+          <div class="team">Thigh Hard</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">195,341</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">7,427</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">3</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">24.</div>
+        <div class="participant-info">
+          <h3>Marc Solis </h3>
+          <div class="team">Til Steps Do Us Part</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">183,937</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">7,540</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">3</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">25.</div>
+        <div class="participant-info">
+          <h3>Therese Bas </h3>
+          <div class="team">The Walking Dead</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">164,949</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">6,367</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">1</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">26.</div>
+        <div class="participant-info">
+          <h3>Ceejay Sahagun </h3>
+          <div class="team">Waddling Penguins</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">145,593</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">6,178</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">1</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">27.</div>
+        <div class="participant-info">
+          <h3>Luis Carpio </h3>
+          <div class="team">Johnnie Walkers</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">108,856</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">4,732</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">0</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+
+    <div class="participant-card">
+      <div class="participant-header">
+        <div class="rank">28.</div>
+        <div class="participant-info">
+          <h3>Aly Payong </h3>
+          <div class="team">Black And Yellow</div>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-box"><div class="value">100,686</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">4,377</div><div class="label">Avg Steps/Day</div></div>
+        <div class="stat-box"><div class="value">100%</div><div class="label">Consistency</div></div>
+        <div class="stat-box"><div class="value">0</div><div class="label">14K+ Days</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<h2 class="section-title">🎉 Individual Achievement Awards</h2>
+<div class="leaderboard">
+  <div class="participants-grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));">
+    <div class="participant-card">
+      <div class="participant-info"><h3>🔥 Biggest Single-Day Performances (Top 10)</h3></div>
+      <div class="ach-item"><strong>Marie Olano</strong> – 75,598 steps</div><div class="ach-item"><strong>Jett Rutherford</strong> – 74,920 steps</div><div class="ach-item"><strong>Zack Rutherford</strong> – 60,570 steps</div><div class="ach-item"><strong>Maury Guadalupe</strong> – 58,036 steps</div><div class="ach-item"><strong>Lorenzo Carpio</strong> – 55,649 steps</div><div class="ach-item"><strong>Jacqui Guadalupe</strong> – 46,820 steps</div><div class="ach-item"><strong>Rjay Conrad</strong> – 41,675 steps</div><div class="ach-item"><strong>Arthur Olano</strong> – 41,529 steps</div><div class="ach-item"><strong>Daday P</strong> – 41,111 steps</div><div class="ach-item"><strong>Stephen Olano</strong> – 40,333 steps</div>
+    </div>
+    <div class="participant-card">
+      <div class="participant-info"><h3>⚡ 14K+ Daily Champions (Top 10)</h3></div>
+      <div class="ach-item"><strong>Marie Olano</strong> – 23 days at 14K+</div><div class="ach-item"><strong>Zack Rutherford</strong> – 22 days at 14K+</div><div class="ach-item"><strong>Jett Rutherford</strong> – 22 days at 14K+</div><div class="ach-item"><strong>Armi Olaño</strong> – 22 days at 14K+</div><div class="ach-item"><strong>Stephen Olano</strong> – 21 days at 14K+</div><div class="ach-item"><strong>Maury Guadalupe</strong> – 20 days at 14K+</div><div class="ach-item"><strong>Rjay Conrad</strong> – 20 days at 14K+</div><div class="ach-item"><strong>Jacqui Guadalupe</strong> – 19 days at 14K+</div><div class="ach-item"><strong>Nat Gp</strong> – 19 days at 14K+</div><div class="ach-item"><strong>Lorenzo Carpio</strong> – 18 days at 14K+</div>
+    </div>
+    <div class="participant-card">
+      <div class="participant-info"><h3>🏆 Top Daily Winners (by Points)</h3></div>
+      <div class="ach-item"><strong>Jett Rutherford</strong> – 7 daily wins</div><div class="ach-item"><strong>Marie Olano</strong> – 5 daily wins</div><div class="ach-item"><strong>Zack Rutherford</strong> – 5 daily wins</div><div class="ach-item"><strong>Lorenzo Carpio</strong> – 2 daily wins</div><div class="ach-item"><strong>Maury Guadalupe</strong> – 2 daily wins</div><div class="ach-item"><strong>Arthur Kaufman</strong> – 1 daily wins</div><div class="ach-item"><strong>Stephen Olano</strong> – 1 daily wins</div>
+    </div>
+  </div>
+</div>
+
+<h2 class="section-title">🎯 Consistency & Momentum</h2>
+<div class="leaderboard">
+  <div class="participants-grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));">
+    <div class="participant-card">
+      <div class="participant-info"><h3>🎯 Consistency Awards</h3></div>
+      <div class="ach-item"><strong>Perfect Attendance (100%)</strong><br>Zack Rutherford, Jett Rutherford, Marie Olano, Lorenzo Carpio, Maury Guadalupe, Jacqui Guadalupe, Stephen Olano, Rjay Conrad, Arthur Olano, Arthur Kaufman, Armi Olaño, Oli Ramos, Er Plata, Nat Gp, Cecile Gomez, Jessie Bartolome, Gaye Claveria, Daday P, Mayang Carps, Paolo Bas, Owen Jude, Khaleel Mckinley, Marc Solis, Jay P, Therese Bas, Ceejay Sahagun, Luis Carpio, Aly Payong</div>
+      
+    </div>
+    <div class="participant-card">
+      <div class="participant-info"><h3>💪 Most Improved (2nd half vs 1st)</h3></div>
+      <div class="ach-item"><strong>Owen Jude</strong> – +94%</div><div class="ach-item"><strong>Marie Olano</strong> – +36%</div><div class="ach-item"><strong>Rjay Conrad</strong> – +32%</div><div class="ach-item"><strong>Aly Payong</strong> – +29%</div><div class="ach-item"><strong>Jett Rutherford</strong> – +25%</div>
+    </div>
+    <div class="participant-card">
+      <div class="participant-info"><h3>🏁 Strong Finishers (Last 3 Days)</h3></div>
+      <div class="ach-item"><strong>Jett Rutherford</strong> – +25520 vs daily avg</div><div class="ach-item"><strong>Marie Olano</strong> – +25495 vs daily avg</div><div class="ach-item"><strong>Zack Rutherford</strong> – +13966 vs daily avg</div><div class="ach-item"><strong>Daday P</strong> – +8420 vs daily avg</div><div class="ach-item"><strong>Rjay Conrad</strong> – +7092 vs daily avg</div>
+    </div>
+  </div>
+</div>
+
+<h2 class="section-title">🏖️ Weekend Warriors</h2>
+<div class="leaderboard">
+  <div class="participants-grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));">
+    <div class="participant-card">
+      <div class="participant-info"><h3>Top Weekend Totals</h3></div>
+      <div class="ach-item"><strong>Jett Rutherford</strong> – 291,849 weekend steps</div><div class="ach-item"><strong>Marie Olano</strong> – 268,366 weekend steps</div><div class="ach-item"><strong>Zack Rutherford</strong> – 253,170 weekend steps</div><div class="ach-item"><strong>Maury Guadalupe</strong> – 251,500 weekend steps</div><div class="ach-item"><strong>Jacqui Guadalupe</strong> – 204,653 weekend steps</div>
+    </div>
+  </div>
+</div>
+
+<h2 class="section-title">🏢 Weekday Warriors</h2>
+<div class="leaderboard">
+  <div class="participants-grid" style="grid-template-columns:repeat(auto-fit,minmax(320px,1fr));">
+    <div class="participant-card">
+      <div class="participant-info"><h3>Top Weekday Totals</h3></div>
+      <div class="ach-item"><strong>Zack Rutherford</strong> – 526,222 weekday steps</div><div class="ach-item"><strong>Marie Olano</strong> – 484,994 weekday steps</div><div class="ach-item"><strong>Jett Rutherford</strong> – 463,681 weekday steps</div><div class="ach-item"><strong>Lorenzo Carpio</strong> – 387,096 weekday steps</div><div class="ach-item"><strong>Oli Ramos</strong> – 328,884 weekday steps</div>
+    </div>
+  </div>
+</div>
+
+<h2 class="section-title">🏅 Team Battle Championship (By Points)</h2>
+<div class="team-grid">
+  
+    <div class="team-card">
+      <div class="team-rank">🥇 1st</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Stepocalypse</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">1,724,922</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">862,461</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">125,808</div><div class="label">Best Single Day Points</div></div>
+      </div>
     </div>
     
-    <script>
-        // All charts removed - clean report without interactive charts
-    </script>
-    </script>
+    <div class="team-card">
+      <div class="team-rank">🥈 2nd</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Hopia Catch Up</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">1,386,034</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">693,017</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">110,811</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank">🥉 3rd</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Heart And Sole</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">1,130,774</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">565,387</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">106,296</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 4th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Sole Mates</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">952,037</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">476,018</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">75,308</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 5th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">The Fat And The Curious</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">892,891</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">446,446</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">68,594</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 6th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Silver</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">878,462</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">439,231</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">51,249</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 7th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Walksilog</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">822,909</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">411,454</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">65,251</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 8th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Big Beautiful Strides</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">767,096</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">383,548</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">52,563</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 9th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Thigh Hard</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">526,437</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">263,218</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">48,736</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 10th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Lakad Pusa</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">451,068</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">225,534</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">36,725</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 11th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">The Walking Dead</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">381,169</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">190,584</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">38,549</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 12th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">No Teams</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 1</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">317,067</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">317,067</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">24,474</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 13th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Pata Team</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">300,141</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">150,070</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">23,843</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 14th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Black And Yellow</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">299,646</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">149,823</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">19,201</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 15th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Til Steps Do Us Part</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">257,494</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">128,747</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">26,752</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 16th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Johnnie Walkers</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">188,227</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">94,114</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">17,298</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 17th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Waddling Penguins</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">151,646</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">75,823</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">18,218</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 18th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Step Keri</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 2</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">117,835</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">58,918</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">8,989</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+    <div class="team-card">
+      <div class="team-rank"> 19th</div>
+      <div class="team-name" style="font-weight:800;font-size:18px;margin-bottom:8px">Team Steve</div>
+      <div class="team-members" style="color:#666;margin-bottom:10px">Members: 1</div>
+      <div class="stats-row" style="grid-template-columns:repeat(3,1fr)">
+        <div class="stat-box"><div class="value">46,211</div><div class="label">Total Points</div></div>
+        <div class="stat-box"><div class="value">46,211</div><div class="label">Avg Points/Member</div></div>
+        <div class="stat-box"><div class="value">4,991</div><div class="label">Best Single Day Points</div></div>
+      </div>
+    </div>
+    
+</div>
+
+<div class="chart-container">
+  <div class="chart-title">🏅 Top 10 – Total Points</div>
+  <canvas id="top10points" height="120"></canvas>
+</div>
+<div class="chart-container">
+  <div class="chart-title">👥 Team Points Over Time</div>
+  <canvas id="teamPointsOverTime" height="160"></canvas>
+</div>
+
+<div class="chart-container">
+  <div class="chart-title">📈 Daily Steps & Points (per participant)</div>
+  <div class="controls">
+    <label for="personSel">Participant:</label>
+    <select id="personSel"></select>
+    <label for="metricSel">Metric:</label>
+    <select id="metricSel">
+      <option value="points">Daily Points</option>
+      <option value="steps">Daily Steps</option>
+      <option value="both">Daily Steps + Points</option>
+    </select>
+  </div>
+  <canvas id="stackedDaily" height="160"></canvas>
+</div>
+
+</div> <!-- container -->
+
+<script>
+// Top 10 points
+const pctx = document.getElementById('top10points');
+new Chart(pctx, {
+  type: 'bar',
+  data: { labels: ["Zack Rutherford", "Marie Olano", "Jett Rutherford", "Lorenzo Carpio", "Maury Guadalupe", "Jacqui Guadalupe", "Stephen Olano", "Rjay Conrad", "Arthur Olano", "Armi Ola\u00f1o"], datasets: [{ label: 'Points', data: [878392, 855360, 846530, 649832, 571085, 559689, 530674, 502552, 479257, 472780] }] },
+  options: { responsive: true, scales: { y: { beginAtZero: true } } }
+});
+
+// Team points over time
+const tctx = document.getElementById('teamPointsOverTime');
+new Chart(tctx, {
+  type: 'line',
+  data: { labels: ["2025-08-09", "2025-08-10", "2025-08-11", "2025-08-12", "2025-08-13", "2025-08-14", "2025-08-15", "2025-08-16", "2025-08-17", "2025-08-18", "2025-08-19", "2025-08-20", "2025-08-21", "2025-08-22", "2025-08-23", "2025-08-24", "2025-08-25", "2025-08-26", "2025-08-27", "2025-08-28", "2025-08-29", "2025-08-30", "2025-08-31"], datasets: [{"label": "Stepocalypse", "data": [76407, 78792, 63169, 67003, 63766, 78542, 99817, 36450, 53441, 76690, 96082, 54164, 71997, 51496, 60060, 60571, 42901, 72692, 83856, 94362, 102866, 113990, 125808], "fill": false, "tension": 0.2}, {"label": "Hopia Catch Up", "data": [56109, 49603, 66942, 50693, 46914, 40492, 58935, 48208, 55317, 58375, 64273, 46641, 50500, 51261, 43873, 38628, 73240, 89539, 62496, 68337, 84319, 70528, 110811], "fill": false, "tension": 0.2}, {"label": "Heart And Sole", "data": [37943, 69772, 18550, 34493, 55317, 39751, 31504, 106296, 38139, 38840, 47989, 45022, 53341, 36599, 104150, 37764, 48926, 30147, 52062, 38929, 39651, 47438, 78151], "fill": false, "tension": 0.2}, {"label": "Sole Mates", "data": [25214, 75308, 51919, 53074, 38523, 31395, 24776, 38742, 35138, 41028, 42842, 43905, 46764, 41996, 58061, 43017, 39714, 40780, 28181, 41854, 25748, 44472, 39586], "fill": false, "tension": 0.2}, {"label": "The Fat And The Curious", "data": [26292, 27189, 27632, 32589, 40654, 37569, 68594, 21682, 43578, 35684, 66439, 56525, 15517, 29161, 54741, 53908, 19621, 44600, 40273, 40599, 28499, 43826, 37719], "fill": false, "tension": 0.2}] },
+  options: { responsive: true, interaction: { mode: 'index', intersect: false }, stacked: false }
+});
+
+// Interactive stacked bar per participant
+const participants = ["Zack Rutherford", "Marie Olano", "Jett Rutherford", "Lorenzo Carpio", "Maury Guadalupe", "Jacqui Guadalupe", "Stephen Olano", "Rjay Conrad", "Arthur Olano", "Armi Ola\u00f1o", "Nat Gp", "Arthur Kaufman", "Er Plata", "Oli Ramos", "Daday P", "Cecile Gomez", "Gaye Claveria", "Jessie Bartolome", "Owen Jude", "Mayang Carps", "Paolo Bas", "Khaleel Mckinley", "Jay P", "Marc Solis", "Therese Bas", "Ceejay Sahagun", "Luis Carpio", "Aly Payong", "Mika Bacero", "Ime Solis", "Raoul Duque", "Andi Carpio", "Iris Duque", "Ava Ebrada", "Madilyn Ramos", "Chris S"];
+const dates = ["2025-08-09", "2025-08-10", "2025-08-11", "2025-08-12", "2025-08-13", "2025-08-14", "2025-08-15", "2025-08-16", "2025-08-17", "2025-08-18", "2025-08-19", "2025-08-20", "2025-08-21", "2025-08-22", "2025-08-23", "2025-08-24", "2025-08-25", "2025-08-26", "2025-08-27", "2025-08-28", "2025-08-29", "2025-08-30", "2025-08-31"];
+const stepsMap = {"Zack Rutherford": [39840, 42932, 30095, 30022, 31789, 43481, 60570, 10352, 25413, 32451, 29661, 25433, 30344, 25395, 23256, 20574, 24677, 34419, 35012, 40119, 52754, 47915, 42888], "Jett Rutherford": [29567, 28860, 26074, 24981, 22977, 26061, 30247, 20598, 20028, 36239, 54421, 19731, 32653, 17101, 28804, 30997, 13724, 30273, 40844, 46243, 42112, 58075, 74920], "Marie Olano": [21653, 23237, 40041, 23321, 23400, 17039, 35125, 24513, 30095, 30515, 34744, 20274, 23242, 24280, 29177, 21293, 46854, 40206, 33263, 36338, 56352, 42800, 75598], "Lorenzo Carpio": [16235, 19021, 19210, 22342, 35036, 31371, 55649, 15580, 25124, 26171, 37853, 46248, 3600, 6870, 31732, 27387, 9971, 21016, 29990, 32256, 9513, 34293, 11364], "Maury Guadalupe": [14097, 32677, 7402, 17336, 16606, 16470, 11419, 50476, 15248, 14122, 17848, 20172, 20242, 13806, 58036, 14518, 19463, 15334, 14496, 15773, 14596, 32451, 33997], "Jacqui Guadalupe": [16846, 30095, 11148, 11157, 30711, 15281, 14585, 46820, 14891, 16718, 18141, 16850, 24099, 17293, 37114, 14246, 20463, 10313, 28566, 14156, 17055, 9487, 35154], "Stephen Olano": [27456, 19366, 17901, 15372, 14514, 15453, 15810, 14695, 17222, 20360, 17529, 17367, 18258, 17981, 9196, 11835, 17386, 40333, 20233, 22999, 18967, 18728, 26213], "Rjay Conrad": [13863, 15701, 17638, 14119, 8300, 14125, 14246, 11325, 16155, 17226, 26136, 17106, 15017, 17503, 29855, 14879, 16395, 20235, 22559, 14213, 17009, 16272, 41675], "Arthur Olano": [5408, 41529, 29292, 23515, 14710, 11764, 5282, 11121, 16661, 18843, 16168, 19450, 21394, 17706, 31039, 15556, 16214, 17412, 7647, 17381, 5880, 20345, 14440], "Arthur Kaufman": [19188, 14899, 14873, 11351, 11558, 17335, 10941, 24238, 18727, 25300, 12059, 6629, 23032, 26976, 13887, 12074, 23418, 27730, 13239, 21258, 17028, 6208, 16884], "Armi Ola\u00f1o": [16306, 26779, 15627, 17559, 14813, 14131, 14994, 22121, 13977, 14185, 14674, 15455, 16370, 15290, 18022, 18461, 14500, 14368, 15034, 15473, 14368, 15127, 16146], "Oli Ramos": [8673, 5947, 31555, 22568, 23441, 20081, 23741, 42, 5526, 28981, 21357, 18785, 21853, 24191, 7983, 6803, 3376, 23418, 19678, 16146, 29713, 42, 3003], "Er Plata": [17661, 11072, 17165, 16312, 15400, 14876, 18199, 19254, 10925, 20395, 19527, 16734, 7858, 14291, 7757, 14248, 17855, 20764, 14114, 22117, 25327, 3443, 14523], "Nat Gp": [18729, 11736, 21116, 14721, 18560, 15352, 14711, 22077, 14362, 21545, 20479, 17472, 10937, 16467, 15375, 14384, 9452, 14033, 14234, 14301, 16922, 2986, 17694], "Cecile Gomez": [12342, 11735, 10676, 13347, 11204, 10865, 13498, 15710, 10244, 20263, 6197, 11215, 12050, 12434, 15146, 22417, 14523, 12757, 11991, 11084, 11450, 17638, 15978], "Jessie Bartolome": [14278, 13961, 10623, 15381, 15998, 12800, 20974, 6247, 8388, 15651, 2867, 14680, 16077, 13646, 19219, 12873, 10626, 210, 13637, 11351, 409, 17645, 14526], "Gaye Claveria": [9390, 11225, 9371, 7311, 6156, 13447, 15145, 9885, 7656, 14177, 12334, 8490, 11512, 16156, 13404, 10338, 14514, 15019, 12394, 14630, 14589, 9638, 14576], "Daday P": [17008, 18301, 14291, 3143, 15323, 3773, 16663, 14106, 3067, 5104, 14303, 1441, 14104, 6209, 14756, 4892, 14365, 14414, 5381, 3746, 2510, 16085, 41111], "Mayang Carps": [13000, 15135, 11036, 11627, 10316, 8530, 10215, 6917, 11043, 10012, 10117, 6499, 8154, 8079, 5006, 10691, 10102, 10314, 10663, 7614, 14666, 10121, 8639], "Paolo Bas": [12474, 10299, 5877, 6682, 14097, 9602, 12042, 5846, 9474, 12859, 6853, 7588, 5691, 7301, 15187, 7861, 10428, 6761, 10361, 5145, 4502, 7484, 12306], "Owen Jude": [6557, 3668, 3922, 1747, 1118, 1698, 8445, 2602, 13954, 5013, 16586, 5777, 10917, 16791, 14009, 18521, 9650, 15584, 4783, 2843, 14486, 4033, 20855], "Khaleel Mckinley": [8573, 4888, 8839, 7439, 6733, 7883, 5681, 8254, 9866, 9428, 7212, 11768, 9736, 7596, 9883, 7495, 10900, 11410, 7823, 10856, 5106, 9258, 9333], "Marc Solis": [4119, 688, 6810, 9613, 12300, 7273, 10087, 17687, 21033, 8035, 11356, 5295, 2415, 6624, 5248, 19565, 1441, 1290, 9030, 6369, 4404, 1879, 876], "Jay P": [14058, 16863, 8395, 3933, 14310, 7844, 10433, 3413, 3301, 3883, 12877, 2545, 10621, 4462, 9879, 3318, 7236, 8277, 6181, 4024, 4466, 7397, 3125], "Therese Bas": [3434, 4529, 4364, 2869, 15452, 5081, 7417, 2118, 4210, 11292, 4199, 3288, 9169, 6113, 13781, 870, 5944, 5617, 3462, 7192, 7687, 6858, 11503], "Ceejay Sahagun": [8125, 4286, 8807, 10270, 3642, 2999, 2993, 3129, 5698, 3419, 14718, 2244, 9900, 6965, 7164, 3490, 9020, 3565, 1492, 7981, 4941, 12946, 4299], "Luis Carpio": [52, 704, 4366, 11344, 10783, 5229, 140, 538, 6560, 8653, 6916, 8869, 421, 6570, 3867, 1255, 4524, 2667, 5977, 9129, 7023, 156, 3113], "Aly Payong": [3370, 1785, 6725, 3444, 3500, 2350, 658, 7497, 2607, 6632, 3302, 7433, 4752, 8316, 4179, 2780, 5353, 7463, 7213, 6371, 2917, 125, 1914], "Mika Bacero": [3434, 4375, 457, 2713, 6515, 6987, 7676, 3578, 930, 528, 2526, 5066, 5457, 546, 4164, 400, 510, 879, 4894, 7415, 4397, 5509, 415], "Ime Solis": [2558, 2077, 3895, 4058, 4197, 3973, 5361, 2770, 291, 3297, 4798, 3950, 2426, 3050, 3463, 3687, 126, 962, 5026, 4991, 3053, 1406, 4142], "Raoul Duque": [2661, 4363, 1824, 1709, 3074, 1966, 3191, 2130, 2103, 2671, 3400, 1735, 1218, 2542, 3266, 5216, 4399, 1427, 1768, 2770, 5519, 4011, 1511], "Andi Carpio": [7715, 77, 3408, 2737, 1728, 3117, 1535, 2706, 4618, 4249, 3283, 2158, 3796, 3498, 4486, 103, 3462, 144, 1423, 1429, 5677, 206, 1590], "Iris Duque": [3638, 1650, 2014, 5183, 2516, 2293, 2018, 985, 1199, 3685, 2678, 1433, 1145, 2238, 1517, 2989, 1007, 2431, 4253, 2092, 3470, 2486, 441], "Ava Ebrada": [578, 2995, 564, 3683, 3472, 4991, 4051, 1997, 1901, 1785, 1874, 1086, 932, 70, 36, 548, 609, 860, 4442, 4149, 2872, 1178, 1538], "Madilyn Ramos": [5071, 398, 1670, 1456, 37, 1441, 680, 80, 3444, 2728, 674, 63, 963, 2398, 6415, 5826, 1821, 0, 0, 0, 0, 0, 0], "Chris S": [4167, 1782, 104, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]};
+const pointsMap = {"Zack Rutherford": [43340, 46432, 33595, 36022, 36289, 47981, 65070, 11352, 29413, 36451, 35661, 29933, 34844, 29895, 27756, 25074, 29177, 38919, 39512, 44619, 57254, 52415, 47388], "Marie Olano": [25153, 26737, 44541, 29321, 27900, 21539, 38625, 29013, 34095, 34015, 40744, 24774, 27742, 28780, 33677, 25793, 51354, 44706, 37763, 40838, 60852, 47300, 80098], "Jett Rutherford": [33067, 32360, 29574, 30981, 27477, 30561, 34747, 25098, 24028, 40239, 60421, 24231, 37153, 21601, 32304, 35497, 13724, 33773, 44344, 49743, 45612, 61575, 78420], "Lorenzo Carpio": [19735, 23521, 23710, 28342, 39536, 35871, 60149, 19080, 29124, 30171, 43853, 50748, 3600, 7870, 36232, 31887, 9971, 24516, 34490, 36756, 9513, 38793, 12364], "Maury Guadalupe": [17597, 36177, 7402, 20836, 20106, 19970, 12419, 54976, 19248, 18122, 23848, 23672, 24742, 14806, 62536, 19018, 23963, 18834, 18996, 20273, 18096, 36951, 38497], "Jacqui Guadalupe": [20346, 33595, 11148, 13657, 35211, 19781, 19085, 51320, 18891, 20718, 24141, 21350, 28599, 21793, 41614, 18746, 24963, 11313, 33066, 18656, 21555, 10487, 39654], "Stephen Olano": [30956, 22866, 22401, 21372, 19014, 18953, 20310, 19195, 21222, 24360, 23529, 21867, 22758, 22481, 10196, 12835, 21886, 44833, 24733, 27499, 23467, 23228, 30713], "Rjay Conrad": [13863, 19201, 21138, 20119, 9300, 18625, 18746, 12325, 20155, 21226, 32136, 21606, 19517, 22003, 34355, 19379, 20895, 24735, 27059, 17713, 21509, 20772, 46175], "Arthur Olano": [5408, 45029, 32792, 29515, 19210, 12764, 5282, 12121, 20661, 22843, 22168, 23950, 25894, 22206, 35539, 20056, 20714, 21912, 8647, 21881, 6880, 24845, 18940], "Armi Ola\u00f1o": [19806, 30279, 19127, 23559, 19313, 18631, 19494, 26621, 14477, 18185, 20674, 19955, 20870, 19790, 22522, 22961, 19000, 18868, 19534, 19973, 18868, 19627, 20646], "Nat Gp": [22229, 11736, 24616, 18221, 23060, 18852, 19211, 26577, 17862, 25545, 26479, 21972, 11937, 20967, 19875, 18884, 10452, 18533, 18734, 18801, 21422, 2986, 22194], "Arthur Kaufman": [22688, 18399, 18373, 11351, 11558, 20835, 10941, 27738, 22227, 28800, 12059, 6629, 26532, 30476, 13887, 12074, 26918, 31230, 13239, 24758, 20528, 6208, 20384], "Er Plata": [21161, 11072, 20665, 19812, 19900, 18376, 22699, 23754, 10925, 24395, 23027, 21234, 8858, 18791, 8757, 18748, 22355, 25264, 18614, 26617, 29827, 3443, 19023], "Oli Ramos": [8673, 5947, 35055, 26068, 26941, 23581, 27241, 42, 5526, 32481, 24857, 22285, 25353, 27691, 7983, 6803, 3376, 26918, 23178, 19646, 33213, 42, 3003], "Daday P": [20508, 21801, 17791, 5643, 19823, 4773, 21163, 18606, 3567, 5104, 20303, 2441, 18604, 7209, 19256, 5892, 18865, 18914, 6381, 4746, 3510, 20585, 45611], "Cecile Gomez": [12342, 11735, 10676, 13347, 11204, 10865, 13498, 19210, 10244, 23763, 6197, 11215, 12050, 12434, 18646, 25917, 18023, 12757, 11991, 11084, 11450, 21138, 19478], "Gaye Claveria": [9390, 11225, 9371, 9811, 7156, 14447, 19645, 10885, 8156, 18177, 14834, 9490, 12512, 20656, 14404, 11338, 19014, 19519, 12394, 19130, 19089, 10638, 19076], "Jessie Bartolome": [17778, 13961, 10623, 18881, 19498, 12800, 24474, 6247, 8388, 19151, 2867, 18180, 19577, 13646, 22719, 12873, 10626, 210, 13637, 11351, 409, 21145, 18026], "Owen Jude": [6557, 3668, 3922, 4247, 1118, 1698, 8445, 2602, 14454, 5513, 22586, 5777, 11917, 21291, 18509, 22021, 9650, 20084, 5783, 3843, 18986, 5033, 25355], "Mayang Carps": [13000, 18635, 11036, 11627, 10316, 8530, 10215, 6917, 11543, 10012, 10117, 6499, 8154, 8079, 5006, 10691, 10102, 10314, 10663, 7614, 18166, 10121, 8639], "Paolo Bas": [12474, 10299, 5877, 6682, 18597, 10602, 12042, 5846, 9474, 13359, 6853, 7588, 5691, 7301, 18687, 7861, 10428, 6761, 10361, 5145, 4502, 7484, 12306], "Khaleel Mckinley": [8573, 4888, 8839, 7439, 6733, 7883, 5681, 8254, 9866, 9428, 7212, 11768, 9736, 7596, 9883, 7495, 10900, 11410, 7823, 10856, 6106, 10258, 10333], "Jay P": [17558, 20363, 8395, 6433, 18810, 7844, 10433, 3413, 3301, 3883, 15377, 3545, 11621, 4462, 10879, 4318, 8236, 8277, 7181, 5024, 5466, 7397, 3125], "Marc Solis": [4119, 688, 6810, 9613, 12300, 7273, 10087, 21187, 24533, 8035, 11356, 5295, 2415, 6624, 5248, 23065, 1441, 1290, 9030, 6369, 4404, 1879, 876], "Therese Bas": [3434, 4529, 4364, 2869, 19952, 6081, 8417, 3118, 4210, 11792, 6699, 3288, 10169, 7113, 14781, 1870, 5944, 6617, 3462, 8192, 8687, 6858, 12503], "Ceejay Sahagun": [8125, 4286, 8807, 10270, 3642, 2999, 2993, 3129, 5698, 3419, 18218, 2244, 9900, 6965, 7164, 3490, 9020, 3565, 1492, 7981, 4941, 12946, 4299], "Luis Carpio": [52, 704, 4366, 11344, 10783, 5229, 140, 538, 6560, 8653, 6916, 8869, 421, 6570, 3867, 1255, 4524, 2667, 5977, 9129, 7023, 156, 3113], "Aly Payong": [3370, 1785, 6725, 3444, 3500, 2350, 658, 7497, 2607, 6632, 3302, 7433, 4752, 8316, 4179, 2780, 5353, 7463, 7213, 6371, 2917, 125, 1914], "Mika Bacero": [3434, 4375, 457, 2713, 6515, 6987, 7676, 3578, 930, 528, 2526, 5066, 5457, 546, 4164, 400, 510, 879, 4894, 7415, 4397, 5509, 415], "Ime Solis": [2558, 2077, 3895, 4058, 4197, 3973, 5361, 2770, 291, 3297, 4798, 3950, 2426, 3050, 3463, 3687, 126, 962, 5026, 4991, 3053, 1406, 4142], "Raoul Duque": [2661, 4363, 1824, 1709, 3074, 1966, 3191, 2130, 2103, 2671, 3400, 1735, 1218, 2542, 3266, 5216, 4399, 1427, 1768, 2770, 5519, 4011, 1511], "Andi Carpio": [7715, 77, 3408, 2737, 2728, 3117, 1535, 2706, 4618, 4249, 3283, 2158, 3796, 3498, 4486, 103, 3462, 144, 1423, 1429, 5677, 206, 1590], "Iris Duque": [3638, 1650, 2014, 5183, 2516, 2293, 2018, 985, 1199, 3685, 2678, 1433, 1145, 2238, 1517, 2989, 1007, 2431, 4253, 2092, 3470, 2486, 441], "Ava Ebrada": [578, 2995, 564, 3683, 3472, 4991, 4051, 1997, 1901, 1785, 1874, 1086, 932, 70, 36, 548, 609, 860, 4442, 4149, 2872, 1178, 1538], "Madilyn Ramos": [5071, 398, 1670, 1456, 37, 1441, 680, 80, 3444, 2728, 674, 63, 963, 2398, 6415, 5826, 1821, 0, 0, 0, 0, 0, 0], "Chris S": [4167, 1782, 104, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "Steve Carpio": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]};
+
+const sel = document.getElementById('personSel');
+participants.forEach(n => {
+  const opt = document.createElement('option'); opt.value = n; opt.textContent = n; sel.appendChild(opt);
+});
+const metricSel = document.getElementById('metricSel');
+
+const sctx = document.getElementById('stackedDaily');
+let stackedChart = null;
+
+function buildDataset(name, mode) {
+  const steps = stepsMap[name] || dates.map(_=>0);
+  const points = pointsMap[name] || dates.map(_=>0);
+  const datasets = [];
+  if (mode === 'steps') {
+    datasets.push({label: 'Steps', data: steps, stack: 'stack1'});
+  } else if (mode === 'points') {
+    datasets.push({label: 'Points', data: points, stack: 'stack1'});
+  } else {
+    const adjPoints = points.map((p,i)=> Math.max(0, p - steps[i]));
+    datasets.push({label: 'Steps', data: steps, stack: 'stack1'});
+    datasets.push({label: 'Points (above Steps)', data: adjPoints, stack: 'stack1'});
+  }
+  return datasets;
+}
+
+function renderChart() {
+  const name = sel.value || participants[0];
+  const mode = metricSel.value;
+  const datasets = buildDataset(name, mode);
+  if (stackedChart) stackedChart.destroy();
+  stackedChart = new Chart(sctx, {
+    type: 'bar',
+    data: { labels: dates, datasets },
+    options: {
+      responsive: true,
+      scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } }
+    }
+  });
+}
+
+sel.addEventListener('change', renderChart);
+metricSel.addEventListener('change', renderChart);
+sel.value = participants[0];
+renderChart();
+</script>
 </body>
 </html>
